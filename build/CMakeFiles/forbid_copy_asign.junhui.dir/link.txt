@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/forbid_copy_asign.junhui.dir/source/forbid_copy_asign.cpp.o -o forbid_copy_asign.junhui 

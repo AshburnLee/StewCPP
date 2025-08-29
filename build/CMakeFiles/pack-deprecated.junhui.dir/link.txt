@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/pack-deprecated.junhui.dir/source/pack-deprecated.cpp.o -o pack-deprecated.junhui 

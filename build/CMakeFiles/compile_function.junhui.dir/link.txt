@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/compile_function.junhui.dir/source/compile_function.cpp.o -o compile_function.junhui 

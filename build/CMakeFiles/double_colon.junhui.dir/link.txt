@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/double_colon.junhui.dir/source/double_colon.cpp.o -o double_colon.junhui 

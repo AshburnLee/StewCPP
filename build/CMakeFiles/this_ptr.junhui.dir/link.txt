@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/this_ptr.junhui.dir/source/this_ptr.cpp.o -o this_ptr.junhui 

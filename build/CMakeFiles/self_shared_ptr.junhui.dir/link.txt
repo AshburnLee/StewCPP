@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/self_shared_ptr.junhui.dir/source/self_shared_ptr.cpp.o -o self_shared_ptr.junhui 

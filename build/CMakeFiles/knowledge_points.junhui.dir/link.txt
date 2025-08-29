@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/knowledge_points.junhui.dir/source/knowledge_points.cpp.o -o knowledge_points.junhui 

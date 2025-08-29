@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/global_macro.junhui.dir/source/global_macro.cpp.o -o global_macro.junhui 

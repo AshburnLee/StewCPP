@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/self_memcpy.junhui.dir/source/self_memcpy.cpp.o -o self_memcpy.junhui 

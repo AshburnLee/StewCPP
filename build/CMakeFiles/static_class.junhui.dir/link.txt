@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/static_class.junhui.dir/source/static_class.cpp.o -o static_class.junhui 

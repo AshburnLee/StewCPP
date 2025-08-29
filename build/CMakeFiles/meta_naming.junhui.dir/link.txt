@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/meta_naming.junhui.dir/source/meta_naming.cpp.o -o meta_naming.junhui 

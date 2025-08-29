@@ -1,0 +1,1 @@
+g++ -Wall -g CMakeFiles/enclosed_class.junhui.dir/source/enclosed_class.cpp.o -o enclosed_class.junhui 
