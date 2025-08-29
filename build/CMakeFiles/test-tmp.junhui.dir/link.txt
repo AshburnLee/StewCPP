@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/test-tmp.junhui.dir/source/test-tmp.cpp.o -o test-tmp.junhui 

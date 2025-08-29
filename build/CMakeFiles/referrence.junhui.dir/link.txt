@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/referrence.junhui.dir/source/referrence.cpp.o -o referrence.junhui 

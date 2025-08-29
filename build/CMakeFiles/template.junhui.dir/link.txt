@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/template.junhui.dir/source/template.cpp.o -o template.junhui 

@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/pure_class.junhui.dir/source/pure_class.cpp.o -o pure_class.junhui 

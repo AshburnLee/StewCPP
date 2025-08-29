@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/friends.junhui.dir/source/friends.cpp.o -o friends.junhui 

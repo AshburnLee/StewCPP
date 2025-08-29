@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/memory_in_c.junhui.dir/source/memory_in_c.cpp.o -o memory_in_c.junhui 

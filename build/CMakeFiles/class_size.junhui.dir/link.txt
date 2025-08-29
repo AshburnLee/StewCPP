@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/class_size.junhui.dir/source/class_size.cpp.o -o class_size.junhui 

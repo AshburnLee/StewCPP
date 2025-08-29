@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/copy_deep.junhui.dir/source/copy_deep.cpp.o -o copy_deep.junhui 

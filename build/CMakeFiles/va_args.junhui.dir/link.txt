@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/va_args.junhui.dir/source/va_args.cpp.o -o va_args.junhui 

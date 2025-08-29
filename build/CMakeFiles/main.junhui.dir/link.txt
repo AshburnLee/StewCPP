@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/main.junhui.dir/source/main.cpp.o -o main.junhui 

@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/alignas.junhui.dir/source/alignas.cpp.o -o alignas.junhui 

@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/type_convertion_func.junhui.dir/source/type_convertion_func.cpp.o -o type_convertion_func.junhui 

@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/void_ptr.junhui.dir/source/void_ptr.cpp.o -o void_ptr.junhui 

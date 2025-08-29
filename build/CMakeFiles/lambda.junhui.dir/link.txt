@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/lambda.junhui.dir/source/lambda.cpp.o -o lambda.junhui 

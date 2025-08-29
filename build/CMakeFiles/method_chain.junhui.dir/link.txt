@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/method_chain.junhui.dir/source/method_chain.cpp.o -o method_chain.junhui 

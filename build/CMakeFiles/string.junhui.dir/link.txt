@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/string.junhui.dir/source/string.cpp.o -o string.junhui 

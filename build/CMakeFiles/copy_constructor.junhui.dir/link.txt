@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/copy_constructor.junhui.dir/source/copy_constructor.cpp.o -o copy_constructor.junhui 

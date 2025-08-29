@@ -1,1 +1,0 @@
-g++ -Wall -g CMakeFiles/disassembly.junhui.dir/source/disassembly.cpp.o -o disassembly.junhui 
