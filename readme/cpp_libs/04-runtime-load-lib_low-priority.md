@@ -59,7 +59,7 @@ Linux 平台下，动态加载库的装载、使用、卸载等操作需要借�
 
 main.c
 
-```cpp
+~~~cpp
 #include <stdio.h>
 #include <dlfcn.h>
 int main() {
@@ -98,7 +98,7 @@ int main() {
     dlclose(handler);
     return 0;
 }
-```
+~~~
 
 将 main.c 和 libmymath.so 置于同一目录执行：
 
