@@ -6,7 +6,7 @@
 
 using namespace std;
 
-// #867.
+// [867 E].
 class MatTransposeSolver {
 public:
     vector<vector<int>> LaunchTranspose(vector<vector<int>> &A) {
@@ -25,7 +25,7 @@ public:
     }
 };
 
-// #566. reshape matrix
+// [566 E]. reshape matrix
 class ReshapeSolver {
 public:
     vector<vector<int>> LaunchReshape(vector<vector<int>> &mat, int r, int c) {
@@ -83,11 +83,13 @@ public:
     }
 };
 
-// #54. 
 /*
+[54 M]. Spiral Matrix
+
 给你一个 m 行 n 列的矩阵 matrix ，请按照 顺时针螺旋顺序 ，返回矩阵中的所有元素。
+
+Key：程序不管什么spiral，程序只管边界，只要边界对了、你指定的遍历顺序（→↓←↑ 为一个循环）对了，那自然即对了
 */
-// insight：程序不管什么spiral，程序只管边界，只要边界对了，你指定的遍历顺序对了，那自然即对了
 class SpiralMatrix {
 public:
     vector<int> Launch(vector<vector<int>>& matrix){
@@ -129,5 +131,7 @@ public:
         return res;
     }
 };
+
+
 
 #endif // MATRIX_ALGS_HEADER

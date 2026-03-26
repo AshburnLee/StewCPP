@@ -6,7 +6,7 @@
 #pragma once
 using namespace std;
 
-// #9. 是否是回文数
+// [9 E]. 是否是回文数
 /*
 Input: x = 121
 Output: true
@@ -16,6 +16,8 @@ Output: false
 
 Input: x = 10
 Output: false
+
+Key：构造 reverse，判断x 是否 = reverse
 */
 class isPalindrome {
 public:
@@ -29,7 +31,7 @@ public:
         int reverse = 0;
         while (x > reverse) {
             reverse = reverse * 10 + x % 10; // *10 是进位, + x % 10 是个位
-            x /= 10;
+            x /= 10;  // 从低到高得到每一位
         }
 
         return /*当x长度是偶数*/x == reverse || /*当x长度是奇数*/x == reverse / 10;

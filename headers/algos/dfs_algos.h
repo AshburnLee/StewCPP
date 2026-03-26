@@ -253,9 +253,13 @@ public:
     }
 };
 
-// 200 number of island
 /*
+[200 M] number of island
 本质上求图中联通分量
+
+Key：找到一个 grid[i][j] == '1'，res 就+1，
+Key: 将与当前位置中遇到的4位置（上下左右）中的 '1' 相邻的所有 '1' 都改为 '0'，
+Key: 注意边界
 */
 class NumIsLands {
 private:

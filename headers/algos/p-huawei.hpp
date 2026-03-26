@@ -65,7 +65,6 @@ void Launcher(){
     BestTime2BuyAndSellStock bt2bass; 
     vector<int> bt2bass_vec = {7,1,5,3,6,4};
     final_res |= CheckValue<int>(bt2bass.Solver(bt2bass_vec), 5);
-    final_res |= CheckValue<int>(bt2bass.LaunchSolverDP(bt2bass_vec), 5);
     count++;
 
     // 122  贪婪

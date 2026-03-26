@@ -12,8 +12,9 @@ using namespace std;
 对于数组中的每一个小行星，正数表示它向右移动，负数表示它向左移动。每一颗小行星的速度都相等。
 找出碰撞后剩下的所有小行星。碰撞规则：两个行星相互碰撞，绝对值较小的行星会爆炸。
 如果两颗行星大小相同，则两颗行星都会爆炸。朝同一方向移动的行星永远不会发生碰撞。
-*/ 
-// 使用栈来存储幸存的行星。 栈的特点是后进先出，这非常适合模拟碰撞的传递性。
+
+使用栈来存储幸存的行星。 栈的特点是后进先出，这非常适合模拟碰撞的传递性。
+*/
 class Collision{
 public:
     vector<int> Solver(vector<int> asteroids) {
@@ -51,7 +52,7 @@ public:
 Input: temperatures = [73,74,75,71,69,72,76,73]
 Output: [1,1,4,2,1,1,0,0]
 
-Key：单调栈的应用 , 栈中存的是索引 而非温度 *** 记住经典问题 ***
+Key：单调栈的应用, 栈中存的是索引 而非温度 *** 记住经典问题 ***
 */
 class DailyTemprature {
 public:
@@ -73,6 +74,54 @@ public:
     }
 };
 
+/*
+[232 E]. Implement Queue using Stacks
+
+ * Your MyQueue object will be instantiated and called as such:
+ * MyQueue* obj = new MyQueue();
+ * obj->push(x);
+ * int param_2 = obj->pop();
+ * int param_3 = obj->peek();  Returns the element at the front of the queue.
+ * bool param_4 = obj->empty();
+
+
+*/
+class QueueusingStacks{
+private:
+    stack<int> in_stack;
+    stack<int> out_stack;
+
+    // 保证 queue 的 FIFO 性质
+    void transfer(){
+        while (!in_stack.empty()) {
+            out_stack.push(in_stack.top());
+            in_stack.pop();
+        }
+    }
+
+public:
+    QueueusingStacks() {}
+    
+    void push(int x) {
+        in_stack.push(x);
+    }
+    
+    int pop() {
+        if (out_stack.empty()) transfer();
+        int val = out_stack.top();
+        out_stack.pop();
+        return val;
+    }
+    
+    int peek() {
+        if(out_stack.empty()) transfer();
+        return out_stack.top();
+    }
+    
+    bool empty() {
+        return in_stack.empty() && out_stack.empty();
+    }
+};
 
 class QueueFromStacks {
 private:
@@ -96,11 +145,13 @@ public:
     }
 };
 
-// 20. valid parentheses
-// 栈的基本使用，一般的，取top元素进行比较等操作
+
 /*
+[20 E]. valid parentheses
 Input: s = "()[]{}"
 Output: true
+
+Key: 栈的基本使用，一般的，取top元素进行比较等操作
 */
 class ValidParetheses {
 public:
@@ -111,7 +162,6 @@ public:
             if (s[i] == '(' || s[i] == '[' || s[i] == '{') {
                 stck.push(s[i]);
             } else { // 如果是右括号，则判断是否与栈顶元素匹配
-                // 
                 if (stck.empty()) return false;
                 char cur = stck.top(); // top之前，先判断stck是否为空**
 

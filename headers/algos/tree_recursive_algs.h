@@ -3,8 +3,13 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 #include "../utils/tree_node.h"
 using namespace std;
+/*
+dfs 递归的实现过程，不应该是一次性型写串行code一样写出来，而是想到啥就写出来，先写出主体，一部分一部分的写，然后通过case，修正细节
+*/
+
 
 // #50. pow(x, n) 求x的n次幂
 class RecursivePow {
@@ -26,7 +31,7 @@ public:
     }
 };
 
-// #104. easy 二叉树最大深度
+// [104 E] 二叉树最大深度
 // 理解关键：画出树形结构，*** 树形结构节点定义是啥，那么这个函数就应该写成啥。
 // insight: 递归函树中调用自己的位置，理解为这个位置的子问题已经被解决。***
 class MaxDepth {
@@ -42,11 +47,12 @@ public:
     int LaunchSolver(TreeNode *root) { return CalculateMax(root); }
 };
 
-// #226. Invert BT
 /*
+[226 E]. Invert BT
 一个节点的左右子树换位置
+
+Insight: 递归函数中调用自己的位置，表示对应的子问题已经得到解决，基于此，解决当前问题。
 */
-// Insight: 递归函数中调用自己的位置，表示对应的子问题已经得到解决，基于此，解决当前问题。
 class InvertBT {
 private:
     TreeNode *Invert(TreeNode *root) {
@@ -110,7 +116,18 @@ public:
 // #257. 返回所有从root到根的路径
 // ***体会如何使用递归函数的返回值
 
-// #129. Sum Root to Leaf Numbers.树中所有的从root到leaf的路径，之和
+/*
+[129 M]. Sum Root to Leaf Numbers.树中所有的从 root 到 leaf 的路径之和
+
+   1
+  /\
+ 2  3
+Input: root = [1,2,3]
+Output: 25
+The root-to-leaf path 1->2 represents the number 12.
+The root-to-leaf path 1->3 represents the number 13.
+Therefore, sum = 12 + 13 = 25.
+*/
 class SumRoot2LeafNumbers{
 public:
     int Solver(TreeNode* root) {
@@ -125,6 +142,47 @@ private:
             return stoi(curr_path);
         }
         return dfs(node->left, curr_path) + dfs(node->right, curr_path);
+    }
+};
+
+/*
+[543 M]. Diameter of Binary Tree
+
+    1
+   / 
+  2   
+ / \ 
+3   4
+   / \
+  5   6
+
+1 2 4 6, 返回3
+
+Key：问题等价于 对于一个node，node左子树的深度 + node右子树的深度
+*/
+class DiameterofBinaryTree{
+public:
+    int Solver(TreeNode* root) {
+        if (!root) {
+            return 0;
+        }
+
+        int max_dia = 0;
+        // 定义：以node为根树的深度
+        function<int(TreeNode*)> dfs = [&](TreeNode* node) {
+            if(!node) return 0;
+            int left_depth  = dfs(node->left);
+            int right_depth = dfs(node->right);
+
+            int curr_dia = left_depth + right_depth;
+            max_dia = max(max_dia, curr_dia);
+
+            return max(left_depth, right_depth) + 1;
+        };
+        
+        int no_use = dfs(root);
+        (void)no_use;
+        return max_dia;
     }
 };
 

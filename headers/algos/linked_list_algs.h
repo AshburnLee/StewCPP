@@ -2,10 +2,117 @@
 #define LINKEDLIST_ALGS_HEADER
 #pragma once
 
-#include "list_node.h"
+#include "list_node.h"  // DLLNode ListNode
 
-// #206. reverse linked list
-// 关键：保证循环能正确进行，要维持变量的定义不变
+/*
+[146 M]. LRU Cache  最近最少使用 Least Recently Used 缓存
+
+Key：当缓存满时，删除最久未使用的元素。如何判断一个元素的最久没有被使用？将刚刚被访问过的节点移动到头部，表示最近使用过，如此
+尾部节点就是最久没有被使用的。
+
+注意：
+1. get 和 put 都必须是 O(1)，故需要 map 存储映射，比如get(5), 应该在O(1)得结果
+2. 每一个节点存储 key 和 value
+*/
+class LRUCache {
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
+private:
+    DLLNode* head;
+    DLLNode* tail;
+    unordered_map<int, DLLNode*> cache;
+    int capacity; 
+
+    // 从链表中移除node，但，不释放node空间。即将 node 变成"游离态" 的node
+    void _RemoveNode(DLLNode* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+    void Move2Head(DLLNode* node) {
+        _RemoveNode(node);
+        Add2Head(node);
+    }
+    void Add2Head(DLLNode* node) {
+        node->prev = head;
+        node->next = head->next;
+        head->next->prev = node;
+        head->next = node;
+    }
+    // return 的是什么？返回的是指向一个游离态的 node ptr，
+    DLLNode* RemoveTail(){
+        DLLNode* last = tail->prev;
+        _RemoveNode(last);
+        return last;
+    }
+
+public:
+    LRUCache(int c):capacity(c) {
+        // 定义双向链表的头和尾，头尾 不存数据
+        head = new DLLNode(0,0);
+        tail = new DLLNode(0,0);
+        // 初始化空的双向链表
+        head->next = tail;
+        tail->prev = head;
+    }
+    ~LRUCache(){
+        DLLNode* curr = head->next;
+        while (curr!=tail) {
+            DLLNode* nxt = curr->next;
+            delete curr;  // 释放 curr 指向的内存空间，变为悬空指针
+            curr=nxt;     // 将 curr 指针指向新的地址空间 
+        }
+        // 最后剩下 head 和 tail 节点，释放这两个节点指向的空间
+        delete head;
+        delete tail;
+    }
+    
+    int get(int key) {
+        if(cache.count(key) == 0){
+            return -1;
+        }
+        DLLNode* n = cache[key];
+        Move2Head(n); // 更新为最新使用
+        return n->val;
+    }
+    
+    void put(int key, int value) {
+        if(cache.count(key) == 0){
+            DLLNode* new_rec = new DLLNode(key, value);
+            cache[key] = new_rec;
+            Add2Head(new_rec);  // 从head添加新元素，总更新为最近使用
+            if(cache.size() > capacity){     // 严谨！
+                DLLNode* tmp = RemoveTail(); // 将最后一个node 变为游离态
+                cache.erase(tmp->key);       // 然后从Cache中删除不要的key
+                delete tmp;                  // 最后释放游离态node的内存
+            }
+        } else {
+            // 更新值，并将这个node,更新为最近使用
+            DLLNode* node = cache[key];
+            node->val = value;
+            Move2Head(node);
+        }
+    }
+};
+
+/*
+[460 M]. LFU Cache Least Frequently Used
+Key: 淘汰访问频次最低的元素，频次相同时淘汰最久未访问的元素。
+
+机制：
+    频次计数：每个元素维护访问次数 freq
+    分层存储：按 freq 分组，每组用 双向链表 维护访问时序
+    淘汰策略：从最低 freq 组的尾部（最久未访问）删除
+*/
+
+
+/*
+[206 E]. reverse linked list
+Key: 保证循环能正确进行，要维持变量的定义不变
+*/
 class ReverseSolver {
 public:
     ListNode *LaunchSolver(ListNode *head) {
@@ -118,26 +225,33 @@ public:
     }
 };
 
-// #160. Intersection of Two Linked Lists
-class Intersection {
+/*
+[160 E]. Intersection of Two Linked Lists
+两个单链表的头节点 headA 和 headB，找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 nullptr。
+
+Key: A走完自己的链 + 从B头开始走B的链 = B走完自己的链 + B从A头开始走A的链。走过的路径相同时，要么是结尾，要么是焦点
+
+*/
+class IntersectionofTwoLinkedLists {
 public:
     ListNode *LaunchSolver(ListNode *headA, ListNode *headB) {
         ListNode *n1 = headA;
         ListNode *n2 = headB;
 
-        // one step at the same time
         // 当两指针所走过的路程一样长时，二者相遇，相遇节点及交叉点
         while (n1 != n2) {
-            if (n1 == nullptr) {
-                n1 = headB;
-            } else {
+            if(n1){
                 n1 = n1->next;
-            }
-            if (n2 == nullptr) {
-                n2 = headA;
             } else {
-                n2 = n2->next;
+                n1 = headB;
             }
+            if(n2){
+                n2 = n2->next;
+            } else {
+                n2 = headA;
+            }
+            // n1 = n1 ? n1->next : headB;
+            // n2 = n2 ? n2->next : headA;
         }
         return n1;
     }
@@ -361,6 +475,116 @@ private:
         if(l2) curr->next = l2;
 
         return d_head.next;
+    }
+};
+
+/*
+[328 M] Odd Even Linked List
+将所有索引为奇数的节点和索引为偶数的节点分别组合在一起，然后返回重新排序的列表。
+
+    索引从 1 开始计数（第一个节点索引为1，是奇数）
+    保持奇数位置节点的相对顺序
+    保持偶数位置节点的相对顺序  
+    空间复杂度 O(1)，时间复杂度 O(n)
+
+输入：[1,2,3,4,5]
+输出：[1,3,5,2,4]
+奇数索引节点：1,3,5
+偶数索引节点：2,4  
+*/
+class OddEvenList {
+public:
+    ListNode* Solver(ListNode* head){
+        if (!head || !head->next) return head;
+
+        ListNode* odd = head;
+        ListNode* even = head->next;
+        ListNode* merged = even;
+        
+        while (even && even->next) {
+            odd->next = odd->next->next;
+            even->next = even->next->next;
+
+            odd = odd->next;
+            even = even->next;
+        }
+        odd->next = merged;
+        return head;
+    }
+};
+
+/*
+[203 E]. Remove Linked List Elements
+
+*/
+class RLLE {
+public:
+    ListNode* Solver(ListNode* head, int val) {
+    ListNode* dh = new ListNode(0, head);
+    ListNode* cur = dh;
+
+    while (cur->next) {
+        if (cur->next->val == val) {
+            ListNode* toDelete = cur->next;
+            cur->next = toDelete->next;
+            delete toDelete;
+        } else {
+            cur = cur->next;
+        }
+    }
+
+    ListNode* ans = dh->next;
+    delete dh;
+    return ans;
+    }
+};
+
+/*
+[21 E] Merge Two Sorted Lists
+ 
+*/
+class MTSL{
+public:
+    ListNode* Solver(ListNode* list1, ListNode* list2) {
+        ListNode* dh = new ListNode(0);
+        ListNode* tail = dh;
+        while(list1 && list2) {
+            if (list1->val <= list2->val) {
+                tail->next = list1;
+                list1 = list1->next;
+            } else {
+                tail->next = list2;
+                list2 = list2->next;
+            }
+            tail = tail->next;
+        }
+
+        tail->next = list1 ? list1 : list2;
+        return dh->next;
+    }
+};
+
+/*
+[83 E]. Remove Duplicates from Sorted List
+
+Input: head = [1,1,2,3,3]
+Output: [1,2,3]
+
+Key: 找到有更简洁且更直观的解法
+*/
+class RDFSL {
+public:
+    ListNode* Sovler(ListNode* head){
+        ListNode* cur = head;
+        while (cur && cur->next) {
+            if (cur->val == cur->next->val) {
+                cur->next = cur->next->next;  // 跳过下一个重复节点
+                // 注意：cur 不动！继续检查新的 cur->next
+            } else {
+                cur = cur->next;  // 无重复才前进
+            }
+        }
+        return head;
     }
 };
 #endif // LINKEDLIST_ALGS_HEADER

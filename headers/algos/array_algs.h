@@ -10,63 +10,64 @@
 #include <numeric>
 #include <queue>
 #include <vector>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
 using namespace std;
 
-// 27 思路：快慢双指针
 /*
+[27 E] 思路：快慢双指针
+
+删除数组汇总指定val，返回更新后数组元素个数
 Input: nums = [0,1,2,2,3,0,4,2], val = 2
 Output: 5, nums = [0,1,4,0,3,_,_,_]
-Explanation: Your function should return k = 5, with the first five elements of nums containing 0, 0, 1, 3, and 4.
-Note that the five elements can be returned in any order.
-It does not matter what you leave beyond the returned k (hence they are underscores).
 */
 
 class RemoveElement {
 public:
     int LaunchSolver(std::vector<int>& nums, int val) {  
-        int k = 0;  // 指针 k 记录不等于 val 的元素应该放置的位置  
-        for (int i = 0; i < nums.size(); ++i) {
-            if (nums[i] != val) { 
-                nums[k] = nums[i];  // 将不等于 val 的元素放到位置 k  
-                ++k;  // 指针 k 前移, 保证k之前的元素都不是val
-            }  
+        int slow = 0;  // 指针 slow 记录不等于 val 的元素应该放置的位置  
+        for (int fast = 0; fast < nums.size(); ++fast) {
+            if (nums[fast] != val) { 
+                nums[slow] = nums[fast];  // 将不等于 val 的元素放到位置 slow  
+                ++slow;  // 指针 slow 前移, 保证k之前的元素都不是val
+            }
         }
-        return k;  // 返回不等于 val 的元素个数, 同时保证 nums 前介个元素不是val
+        return slow;  // 返回不等于 val 的元素个数, 同时保证 nums 前介个元素不是val
     }
 };
 
-// 26 快慢双指针
 /*
-一个有序数组，删除其中的重复元素，返回唯一数的个数
+[26 E] 快慢双指针
+
+一个有序数组，删除其中的重复元素，inplace，返回更新后数组元素个数
 Input: nums = [0,0,1,1,1,2,2,3,3,4]
 Output: 5, nums = [0,1,2,3,4,_,_,_,_,_]
-Explanation: Your function should return k = 5, with the first five elements of nums being 0, 1, 2, 3, and 4 respectively.
-It does not matter what you leave beyond the returned k (hence they are underscores).
 */
 class RemoveDuplicates {
 public:
     int LaunchSolver(std::vector<int>& nums) {
-        int k = 1;
-        for (int i = 0; i < nums.size(); ++i) {
-            if (nums[i] != nums[i - 1]) {
-                nums[k++] = nums[i];
+        if (nums.empty() || nums.size() < 2) {
+            return nums.size();
+        }
+        int slow = 1;
+        for (int fast = 1; fast < nums.size(); ++fast) {
+            if (nums[fast] != nums[slow - 1]) {
+                nums[slow++] = nums[fast];
             }
         }
-        return k;
+        return slow;
     }
 };
 
-// 80 快慢指针
-/**
-输入是一个有序数组
+
+/*
+[80 M] 快慢指针 输入是一个有序数组. 每个元素最多出现两次，删除其余重复项，返回更新后的长度，inplace
+
 Input: nums = [0,0,1,1,1,1,2,3,3]
 Output: 7, nums = [0,0,1,1,2,3,3,_,_]
-Explanation: Your function should return k = 7, with the first seven elements of nums being 0, 0, 1, 1, 2, 3 and 3 respectively.
-It does not matter what you leave beyond the returned k (hence they are underscores). 
 */
 class RemoveDuplicatesII {
 public:
@@ -74,27 +75,40 @@ public:
         if (nums.empty() || nums.size() < 2) {
             return nums.size();
         }
-        int k = 2;
-        for (int i = 2; i < nums.size(); ++i) {
-            if (nums[i] != nums[k - 2]) {
-                nums[k++] = nums[i]; 
+        int slow = 2;
+        for (int fast = 2; fast < nums.size(); ++fast) {
+            if (nums[fast] != nums[slow - 2]) {
+                nums[slow++] = nums[fast]; 
             }
         }
-        return k;
+        return slow;
     }
 };
 
-// 169
+
 /*
-Given an array nums of size n, return the majority element.
-The majority element is the element that appears more than ⌊n / 2⌋ times. You may assume that the majority element always exists in the array.
+[169 E] 某元素出现次数 严格超过数组长度的一半（向下取整 ⌊n / 2⌋）, 返回这个数
 
 Input: nums = [2,2,1,1,1,2,2]
 Output: 2
 */
 class MajorityElements {
 public:
-    // 时间O(n), 空间O(n)
+    // 简化后的 Boyer-Moore 投票算法  如恶化理解 ??
+    // 实践O(n), 空间O(1)
+    int LaunchSolverII(std::vector<int>& nums) {  
+        int candidate = 0;
+        int count = 0;
+        for (int num : nums) {  
+            if (count == 0) {  
+                candidate = num;  
+            }  
+            count += (num == candidate) ? 1 : -1; 
+        }  
+        return candidate;  // 返回候选人作为多数元素  
+    }
+
+    // 一般方法 时间O(n), 空间O(n)
     int LaunchSolver(vector<int>& nums) {
         unordered_map<int, int> hash;
         for (auto i : nums) {
@@ -109,25 +123,12 @@ public:
         }
         return most_itr->first;
     }
-
-    // 简化后的 Boyer-Moore 投票算法  如恶化理解 ??
-    // 实践O(n), 空间O(1)
-    int LaunchSolverII(std::vector<int>& nums) {  
-        int candidate = 0;
-        int count = 0;
-        for (int num : nums) {  
-            if (count == 0) {  
-                candidate = num;  
-            }  
-            count += (num == candidate) ? 1 : -1; 
-        }  
-        return candidate;  // 返回候选人作为多数元素  
-    }
 };
 
-// 189. Rotate Array
-// 多种解法
 /*
+[189 M]. Rotate Array
+多种解法
+
 Input: nums = [1,2,3,4,5,6,7], k = 3
 Output: [5,6,7,1,2,3,4]
 Explanation:
@@ -177,20 +178,22 @@ private:
     }
 };
 
-// 121. Best Time to Buy and Sell Stock
 /*
+[121 E]. Best Time to Buy and Sell Stock
+
 Input: prices = [7,1,5,3,6,4]
 Output: 5
 Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.
+
+解法见 dp_algos.h
 */
-// 解法见 dp_algos.h
 
-
-// 122. Best Time to Buy and Sell Stock II
-// 思路 Greedy
-// 贪心策略: 因为不限制次数，所以在每个上涨的子区间（即 prices[i] < prices[i+1]）都进行交易。 
-// 也就是说，只要今天的价格比昨天的价格高，就在昨天买入，今天卖出。 这种策略可以保证获得所有可能的利润。
 /*
+[122 M]. Best Time to Buy and Sell Stock II
+思路 Greedy
+贪心策略: 因为不限制次数，所以在每个上涨的子区间（即 prices[i] < prices[i+1]）都进行交易。 
+也就是说，只要今天的价格比昨天的价格高，就在昨天买入，今天卖出。 这种策略可以保证获得所有可能的利润。
+
  Input: prices = [7,1,5,3,6,4]
  Output: 7
  Explanation: Buy on day 2 (price = 1) and sell on day 3 (price = 5), profit = 5-1 = 4.
@@ -212,9 +215,10 @@ public:
     }
 };
 
-// 55 JumpGame
-// Greedy & DP
 /*
+[55 M] JumpGame
+Greedy & DP
+
 You are given an integer array nums. You are initially positioned at the array's first index,
 and each element in the array represents your maximum jump length at that position.
 Input: nums = [2,3,1,1,4]
@@ -246,14 +250,16 @@ public:
     }
 };
 
-// 45 jump game ii
+
 /*
+[45 M] jump game ii
+
 给定一个非负整数数组，你最初位于数组的第一个位置。
 数组中的每个元素代表你在该位置可以跳跃的最大长度。
 你的目标是使用最少的跳跃次数到达数组的最后一个位置。返回跳跃次数
 Greedy : 贪心算法的基本思想是每一步都选择最优（或看起来最优）的选择，从而希望最终能得到全局最优解。
 
-// 不理解，很不好理解
+不理解，很不好理解
 */
 class JumpGameII{
 public:
@@ -278,8 +284,9 @@ public:
     }
 };
 
-// 274 记住这个解法，没啥逻辑
 /* 
+[274 M] 记住这个解法，没啥逻辑
+
 给你一个整数数组 citations ，其中 citations[i] 表示研究者的第 i 篇论文被引用的次数。计算并返回该研究者的 h 指数。
 h 指数的定义：h 代表“高引用次数” ，一名科研人员的 h 指数 是指他（她）至少发表了 h 篇论文，
 并且 至少 有 h 篇论文被引用次数大于等于 h 。
@@ -303,8 +310,10 @@ public:
     }
 };
 
-// 238. Product of Array Except Self
-// 思路很直接
+/*
+[238 M]. Product of Array Except Self
+思路很直接
+*/
 class Product {
 public:
     // 不使用除法， 看不懂  神奇** 
@@ -350,9 +359,8 @@ private:
     }
 };
 
-// 13 hashmap 
 /*
-罗马数字包含以下七种字符: I， V， X， L，C，D 和 M。
+[13 E] hashmap 罗马数字包含以下七种字符: I， V， X， L，C，D 和 M。
 
 字符          数值
 I             1
@@ -373,8 +381,10 @@ M             1000
     C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
 
 测试用例皆符合罗马数字书写规则
+
+Key：从右向左，如果当前值小于前一个值，则用减法，否则是加法。记住就好了，** 
 */
-// 核心： 从右向左，如果当前值小于前一个值，则用减法，否则是加法。记住就好了，** 
+
 class RomanToInt {
 public:
     int Launch(string s) {
@@ -406,8 +416,9 @@ public:
     }
 };
 
-// 12 
 /*
+[12 M]
+
 七个不同的符号代表罗马数字，其值如下：
 符号	值
 I	1
@@ -420,9 +431,11 @@ M	1000
 罗马数字是通过添加从最高到最低的小数位值的转换而形成的。将小数位值转换为罗马数字有以下规则：
 
     如果该值不是以 4 或 9 开头，请选择可以从输入中减去的最大值的符号，将该符号附加到结果，减去其值，然后将其余部分转换为罗马数字。
-    如果该值以 4 或 9 开头，使用 减法形式，表示从以下符号中减去一个符号，例如 4 是 5 (V) 减 1 (I): IV ，9 是 10 (X) 减 1 (I)：IX。仅使用以下减法形式：4 (IV)，9 (IX)，40 (XL)，90 (XC)，400 (CD) 和 900 (CM)。
+    如果该值以 4 或 9 开头，使用 减法形式，表示从以下符号中减去一个符号，例如 4 是 5 (V) 减 1 (I): IV ，9 是 10 (X) 减 1 (I)：IX。
+    仅使用以下减法形式：4 (IV)，9 (IX)，40 (XL)，90 (XC)，400 (CD) 和 900 (CM)。
     只有 10 的次方（I, X, C, M）最多可以连续附加 3 次以代表 10 的倍数。你不能多次附加 5 (V)，50 (L) 或 500 (D)。如果需要将符号附加4次，请使用 减法形式。
 
+Key：记住映射表的构造和遍历方法，没啥技巧
 */
 class IntToRoman {
 public:
@@ -447,8 +460,8 @@ public:
     }
 };
 
-// 125
 /*
+[125 E]
 如果在将所有大写字符转换为小写字符、并移除所有非字母数字字符之后，短语正着读和反着读都一样。则可以认为该短语是一个 回文串 。
 
 字母和数字都属于字母数字字符。
@@ -456,6 +469,8 @@ public:
 输入: s = "A man, a plan, a canal: Panama"
 输出：true
 解释："amanaplanacanalpanama" 是回文串。
+
+Key：字符串函数使用；和 static_cast<unsigned char> 的使用
 */
 class ValidPalindrome {
 public:
@@ -485,8 +500,9 @@ public:
     }
 };
 
-// 3 [m] Longest Substring Without Repeating Characters
 /*
+[3 M] Longest Substring Without Repeating Characters
+
 输入: s = "abcbacbb"
 输出: 3 
 解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
@@ -516,10 +532,29 @@ public:
 
         return max_length;  
     }
+
+    
+    int LaunchBest(string s) {
+        unordered_map<char, int> pos;  // 记录字符最近出现位置
+        int l = 0, maxLen = 0;
+        
+        for (int r = 0; r < s.size(); ++r) {
+            // 字符 s[r] 之前出现过吗？同时 上次出现位置在当前窗口 [l, r] 内吗？
+            // 如果同时满足，收缩左边界到重复字符的下一位
+            if (pos.count(s[r]) && pos[s[r]] >= l) {
+                l = pos[s[r]];  
+            }
+            pos[s[r]] = r + 1;  // 记录最新位置（位置计数从1开始）
+            maxLen = max(maxLen, r - l + 1);
+        }
+        return maxLen;
+    }
 };
 
-// 159 [mid] Longest Substring with At Most Two Distinct Characters
+//
 /*
+[159 M] Longest Substring with At Most Two Distinct Characters
+
  滑动窗口 Map
  输入: s = "eceba"
  输出: 3，"ece" 是长度为 3 的最长子串，且最多只有 2 个不同字符。
@@ -554,11 +589,13 @@ public:
     }
 };
 
-// 438 [m] Find All Anagrams in a String
 /*
+[438 m] Find All Anagrams(字母相同、顺序任意) in a String
 固定长度滑动窗口 + 辅助容器（非map非set） ***
 输入: s = "cbaebabacd", p = "abc"
-输出: [0,6]
+输出: [0,6]，s的idx=0处有一个，idx=6处有一个
+
+Key: vector<int> record(26,0) 记录字母的个数频数,理解记住这个功能；滑动固定长度窗口的滑动方式
 */
 class FindAllAnagramsinaString {
 public:
@@ -566,22 +603,22 @@ public:
         vector<int> res;
         int s_l = s.length();
         int p_l = p.length();
-        vector<int> s_rec(26,0);
-        vector<int> p_rec(26,0);
+        vector<int> s_record(26,0);
+        vector<int> target(26,0);
 
         for (int i = 0; i < p_l; ++i) {
-            s_rec[s[i]-'a']++;
-            p_rec[p[i]-'a']++;
+            s_record[s[i]-'a']++;
+            target[p[i]-'a']++;
         }
 
         for (int i = 0; i <= s_l - p_l; ++i) {
-            if (s_rec == p_rec) {
+            if (s_record == target) {
                 res.push_back(i);
             }
 
             if (i < s_l - p_l) { // 防止越界
-                s_rec[s[i]-'a']--;  // 移除左边界元素   
-                s_rec[s[i+p_l]-'a']++;  // 添加右边界元素 
+                s_record[s[i]-'a']--;      // 移除 s_record 左边界元素
+                s_record[s[i+p_l]-'a']++;  // 添加 s 右边界元素
             }
  
         }
@@ -589,8 +626,8 @@ public:
     }
 };
 
-// 228 
 /*
+[228 E]  返回若干个区间，其中每个区间中的数值是连续的
 输入：nums = [0,1,2,4,5,7]
 输出：["0->2","4->5","7"]
 解释：区间范围是：
@@ -598,7 +635,6 @@ public:
 [4,5] --> "4->5"
 [7,7] --> "7"
 */
-// 理解：返回若干个区间，其中每个区间中的数值是连续的
 class SummaryRanges{
 public:
     vector<string> Launch(vector<int>& nums) {
@@ -611,7 +647,7 @@ public:
             }
             int end = nums[i];
 
-            //找到一个符合条件的区间后，放入res中
+            // 找到一个符合条件的区间后，放入res中
             if (start == end) {
                 res.push_back(to_string(start));
             } else {
@@ -622,10 +658,17 @@ public:
     }
 };
 
+/*
+[209 M]. Minimum Size Subarray Sum. 无序数组找元素和大于/等于target的最小长度
+思路：滑动窗口, 理解这个窗口是如何滑动的
+mid, O(n), O(1)
 
-// 209. *** Minimum Size Subarray Sum. 无序数组找元素和大于等于target的最小长度
-// 思路：滑动窗口, 理解这个窗口是如何滑动的
-// mid, O(n), O(1)
+Key: 窗口单向滑动，一次便利；注意目标不是等于，而是大于或等于
+
+Input: target = 7, nums = [2,3,1,2,4,3]
+Output: 2
+Explanation: The subarray [4,3] 
+*/
 class MinSubArrayLenSolver {
 public:
     int LaunchSolver(int target, const vector<int> &nums) {
@@ -646,9 +689,33 @@ public:
         }
         return res == INT_MAX ? 0 : res;
     }
+
+    int LaunchSolverII(int target, vector<int>& nums) {
+        int n = nums.size();
+        int sum = 0, start = 0;
+        int ans = INT_MAX;
+
+        for (int end = 0; end < n; end++) {
+            sum += nums[end];
+
+            while (sum >= target) {
+                ans = min(ans, end - start + 1);
+                sum -= nums[start];
+                start++;
+            }
+        }
+
+        return ans == INT_MAX ? 0 : ans;
+    }
 };
 
-// 3. *** 最长无重复子序列 O(n)
+/*
+[3 M]. *** 最长无重复子序列 O(n)
+Input: s = "pwwkew"
+Output: 3 
+
+Key：map
+*/
 class LongestSubString {
 public:
     int LaunchSolver(string s) {
@@ -661,10 +728,11 @@ public:
             // 如果map中含有当前字符
             if (mp.find(s[i]) != mp.end() && mp[s[i]] >= j) {
                 j = mp[s[i]] + 1; // ***将j移到当前字符上一次出现的位置再+1
-                mp[s[i]] = i; // ***更新当前字符最迟出现的位置
-                // 如果map中没有当前字符
-                // ***[实现时，先实现map不存在该字符的情况，更容易形成逻辑]
-            } else {
+                mp[s[i]] = i;     // ***更新当前字符最迟出现的位置
+            }
+            // 如果map中没有当前字符
+            // ***[实现时，先实现map不存在该字符的情况，更容易形成逻辑]
+            else {
                 mp[s[i]] = i;
                 res = max(res, i - j + 1);
             }
@@ -673,11 +741,15 @@ public:
     }
 };
 
-// #88 merge sorted array,
-// input: nums1 = [2,5,6,0,0,0], m = 3, nums2 = [1,2,3], n = 3
-// output: [1,2,2,3,5,6]
-// 逻辑是：两个数组分别作有效数尾部向头部滑动，比较当前两个位置的大小，将大的移动到数组1的尾部
-// 后更新指针。
+/*
+[88 E] merge sorted array,
+input: nums1 = [2,5,6,0,0,0], m = 3, nums2 = [1,2,3], n = 3
+output: [1,2,2,3,5,6]
+
+逻辑是：两个数组分别作有效数尾部向头部滑动，比较当前两个位置的大小，将大的移动到数组1的尾部
+后更新指针。
+*/
+
 class MergeSortedArray {
 public:
     void LaunchSolver(vector<int> &nums1, int m, vector<int> &nums2, int n) {
@@ -699,8 +771,12 @@ public:
     }
 };
 
-// 283. Move zeroes
-// 维护变量的定义，
+/*
+[283 E]. Move zeroes
+Input: nums = [0,1,0,3,12]
+Output: [1,3,12,0,0]
+维护变量的定义
+*/
 class MoveSeores {
 public:
     void LaunchSolver(vector<int> &nums) {
@@ -714,9 +790,14 @@ public:
     }
 };
 
-// 75. Sort Color
-// 思路1：技术排序。当匀速种类很小时，用一个数组记录每种的个数
-// O(n). O(k)
+/*
+[75 M]. Sort Color
+Input: nums = [2,0,2,1,1,0]
+Output: [0,0,1,1,2,2]
+思路1：技术排序。当匀速种类很小时，用一个数组记录每种的个数
+O(n). O(k)
+*/
+
 class SortColor {
 public:
     void LauncSolver(vector<int> &nums) {
@@ -726,15 +807,15 @@ public:
         }
 
         // 有了每种颜色的频数，相同颜色的放在一起
-        int global_id = 0; // 全局id，写入的唯一地址
+        int gid = 0; // 全局id，写入的唯一地址
         for (int i = 0; i < freq[0]; ++i) {
-            nums[global_id++] = 0; // 第一个颜色
+            nums[gid++] = 0; // 第一个颜色
         }
         for (int i = 0; i < freq[1]; ++i) {
-            nums[global_id++] = 1; // 第二个颜色
+            nums[gid++] = 1; // 第二个颜色
         }
         for (int i = 0; i < freq[2]; ++i) {
-            nums[global_id++] = 2; // 第三个颜色
+            nums[gid++] = 2; // 第三个颜色
         }
     }
 
@@ -757,14 +838,20 @@ public:
     }
 };
 
-// #11. container with most water
 /*
+[11 M]. container with most water
+
+Input: height = [1,8,6,2,5,4,8,3,7]
+Output: 49
+
 思路：***insight：由于每次移动指针，容器的宽度都会减小，
 因此我们只需要考虑高度较小的那个指针向中间移动，才有可能得到更大的面积。
 如果将高度较大的指针向中间移动，那么新的容器高度一定不会超过原来的高度，
 而宽度却变小了，因此面积一定会变小。
-*/ 
-// mid, O(n), O(1)
+
+O(n), O(1)
+*/
+
 class MaxWater {
 public:
     int LaunchSolver(vector<int> &height) {
@@ -896,8 +983,9 @@ private:
 /*
 Input: intervals = [[1,3],[2,6],[8,10],[15,18]]
 Output: [[1,6],[8,10],[15,18]]
+
+逻辑有了，代码就有了。注意 1).lambda函数的使用 2).
 */
-// 逻辑有了，代码就有了。注意1).lambda函数的使用 2).
 class MergeIntervals {
 public:
     vector<vector<int>> Solver(vector<vector<int>> &intervals) {
@@ -998,4 +1086,138 @@ public:
     }
 };
 
+/*
+[76 H] Minimum Window Substring
+给定两个字符串 s 和 t，找到 s 中包含 t 中所有字符的最短子串；若不存在，返回空字符串
+
+s = "ADOBECODEBANC", t = "ABC"
+
+最短覆盖子串："BANC"（包含 A,B,C 各1个）
+长度为 4，"BANC" 是 s 中包含 "ABC" 所有字符的最短子串
+*/
+class MinimumWindowSubstring {
+public:
+
+};
+
+/*
+[3 M]. 3-sum
+
+给定一个整数数组 nums，找出所有和为 0 的不重复三元组 [nums[i], nums[j], nums[k]]，其中 i ≠ j ≠ k
+和为 0; 索引不同，即三个元素来自不同位置
+
+排序 + 双指针
+Key: 固定第一个数，转化为两数之和问题
+
+Input: nums = [-1,0,1,2,-1,-4]
+Output: [[-1,-1,2],[-1,0,1]]
+
+*/
+class ThreeSum {
+public:
+    vector<vector<int>> Solver(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> ans;
+
+        if(nums.size() < 3) return ans;
+        set<vector<int>> st;
+
+        // 固定 k，转化为nums[i] + nums[j] 的判断
+        for(int k=0;k<nums.size()-2;k++) {
+            if(k>0 && nums[k]==nums[k-1]) continue;  // 跳过重复元素
+
+            int i = k + 1, j = nums.size() - 1;
+            while (i < j) {
+                if (nums[i] + nums[j] == -nums[k]) {
+
+                    ans.push_back({nums[k], nums[i], nums[j]});
+                    while (i < j && nums[i] == nums[i + 1]) i++; // 跳过重复元素
+                    while (i < j && nums[j] == nums[j - 1]) j--; // 跳过重复元素
+                    i++;
+                    j--;
+                } else if (nums[i] + nums[j] < -nums[k]) {
+                    i++;
+                } else j--;
+            }
+        }
+        return ans;
+    }
+};
+
+
+/*
+[1004 M] Max Consecutive Ones III
+[487 M] 1004 的特例，k=1，即只能把一个0 变为1
+
+给定一个二进制数组 nums 和一个整数 k，最多可以将 k 个 0 翻转为 1，求翻转后连续 1 的最大个数。
+
+Key: 窗口内最多包含 k 个 0（即可翻转k个）
+Key: 滑动窗口维护 [left, right] 中 0 的个数 ≤ k。 滑动窗口的大小就是连续1的最大长度
+
+Insight: 并不是真正的去替换，而是认为已经被替换！
+*/
+class MaxConsecutiveOnesIII {
+public:
+    int Solver(vector<int>& nums, int k) {
+        int left = 0, 
+        // 滑动窗口中的 0 个数
+        n_zero = 0, 
+        max_len = 0;
+        
+        for (int right = 0; right < nums.size(); ++right) {
+            if (nums[right] == 0) n_zero++;
+
+            while (n_zero > k) {
+                if (nums[left] == 0) {
+                    n_zero--;
+                }
+                left++;
+            }
+            
+            max_len = max(max_len, right - left + 1);
+        }
+        
+        return max_len;
+    }
+};
+
+/*
+[424 M] Longest Repeating Character Replacement  
+
+给定一个字符串 s 和整数 k，最多可以将 k 个字符替换为任意其他大写字母，求替换后包含相同字母的最长子串长度。
+
+Input: s = "AABABBA", k = 1
+Output: 4
+Replace the one 'A' in the middle with 'B' and form "AABBBBA".
+
+Key: 窗口内最频繁字符个数 + 替换次数 ≥ 窗口大小。移动窗口过程中维护最大值
+Note: 字符可以是26个字母中任何一个
+
+Insight: 并不是真正的去替换，而是认为已经被替换！
+*/
+class LongestRepeatingCharacterReplacement {
+public:
+    int Solver(string s, int k){
+        int left = 0;
+        int max_count = 0;
+        int max_len = 0;
+        vector<int> record(26,0);
+
+        // 随着right的移动，新的字符会被遍历到，对应的频数会被更新
+        for (int right = 0; right < s.size(); ++right){
+            record[s[right]-'A']++;  // 只要进入for循环体，right就会好指向新的字符。更新当前字符的频数
+            max_count = max(max_count, record[s[right] - 'A']);
+
+            // 窗口 - 最大频次字符个数 > k， 表示需要收缩窗口: left--
+            while (right - left + 1 - max_count > k) {
+                record[s[left]-'A']--;
+                left++;
+            }
+
+            max_len = max(max_len, right - left + 1);
+        }
+        return max_len;
+    }
+
+};
 #endif // ARRAY_ALGS_HEADER

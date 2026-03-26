@@ -39,6 +39,7 @@ int main() {
 - `[=, &c]() {}`  Mixed capture
 - `[this]() {}`  Capture this pointer
 
+
 ## 声明式编程中的 lambda
 
 `std::sort()` 默认的行为是升序排列，即其中的lambda是 `std::less()`，它是一个 `functor`，重载了 `operator()`.
@@ -87,3 +88,31 @@ priority_queue<Person, vector<Person>, decltype(AgeLess)> root_max(AgeLess);
   - 不执行表达式： `decltype` 不会执行 expression，仅仅是推导其类型
   - C++11 引入： `decltype` 是在 C++11 标准中引入的
 
+
+## `function<long long(TreeNode*)>` 比 `auto` 的优势
+### 1. 类型明确
+### 2. 可以先声明后定义
+
+~~~cpp
+std::function<int(int)> dfs;  // 先声明
+dfs = [](int x) { return x + 1; };  // 后定义 
+~~~
+
+### 3. auto 不能递归
+
+auto 无法实现递归（编译错误）
+~~~cpp
+auto dfs = [&](TreeNode* node) -> long long {
+    return dfs(node->left);  // err, dfs 还未完全定义！
+};
+~~~
+
+std::function 可以递归
+~~~cpp
+std::function<long long(TreeNode*)> dfs = [&](TreeNode* node) {
+    return dfs(node->left);  // 可以访问自身
+};
+~~~
+
+
+### 

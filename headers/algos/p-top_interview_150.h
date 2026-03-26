@@ -9,6 +9,7 @@
 
 #include "array_algs.h"
 #include "binary_tree_algs.h"
+#include "binary_search.hpp"
 #include "bit_algs.h"
 #include "dfs_algos.h"
 #include "dp_algos.h"
@@ -110,6 +111,7 @@ void Launcher(){
     // #12
     IntToRoman itr;
     final_res |= CheckValue<string>(itr.Launch(3749), "MMMDCCXLIX"); // # key: 记住这个算法，你知道这个算法就会了
+    std::cout << itr.Launch(45) << "\n";
     count++;
     // #58
     // #14
@@ -475,13 +477,13 @@ void Launcher(){
     final_res |= CheckValue<string>(bs.Launch("1111", "10101"), "100100");
     count++;
 
-    // #190 有 理解了
+    // [190 E] 有 理解了
     ReverseBits rb;
     uint32_t n_190 = 123;
     final_res |= CheckValue<uint32_t>(rb.Launch(n_190), (uint32_t)3724541952);
     count++;
 
-    // #191
+    // [191 E]
     Number1Bits n1b;
     int n_191 = 2147483645;  // 30 个 1
     final_res |= CheckValue<int>(n1b.Hamming(n_191), 30);
@@ -526,7 +528,7 @@ void Launcher(){
     // # ----------------------------------------------------- 1D DP
     // #70 有
     ClimbStairs cs;
-    final_res |= CheckValue<int>(cs.Solver(5), 8);
+    final_res |= CheckValue<int>(cs.Solveri(5), 8);
     final_res |= CheckValue<int>(cs.Solverii(6), 13);
     final_res |= CheckValue<int>(cs.Solveriii(7), 21);
     count++;
@@ -535,7 +537,7 @@ void Launcher(){
     RobHouse robh;
     vector<int> nums_198 = {2,7,9,3,1};
     final_res |= CheckValue<int>(robh.SolverDP1(nums_198), 12);
-    final_res |= CheckValue<int>(robh.SolverRecursive(nums_198), 12);
+    final_res |= CheckValue<int>(robh.SolverDP2(nums_198), 12);
     count++;
 
     // #139 

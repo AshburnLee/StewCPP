@@ -7,10 +7,18 @@
 
 using namespace std;
 
-// priority_queue 默认是最大堆
-//
+/*
+priority_queue 默认是最大堆:
+
+    template<typename _Tp, typename _Sequence = vector<_Tp>,
+	   typename _Compare  = less<typename _Sequence::value_type> >
+    class priority_queue{}
+
+默认的底层容器是vector, 默认的compare谓词是less
+*/
 class PQBasic {
 public:
+    // 最大堆
     void MaxPQueue() {
         priority_queue<int> max_pq; // 最大堆
         for (int i = 0; i < 10; ++i) {
@@ -25,11 +33,12 @@ public:
         }
     }
 
+    // 最小堆
     void MinPQueue() {
         // 定义个最小堆
-        priority_queue<int, /*堆的底层实现=*/vector<int>,
-                /*greater表示是最小堆*/ greater<int>>
-                min_pq;
+        priority_queue<int, 
+                      /*堆的底层实现=*/vector<int>,
+                      /*greater表示是最小堆=*/greater<int>> min_pq;
         for (int i = 0; i < 10; ++i) {
             int num = rand() % 100;
             min_pq.push(num);
@@ -42,15 +51,22 @@ public:
         }
     }
 
-    // 自定义比较函数
+    // 自定义堆
     void CustomPQueue() {
         // *** 个位数小的 排前面
         auto MyComp = [](int a, int b) { return a % 10 < b % 10; };
         priority_queue<int, vector<int>, decltype(MyComp)> cus_pq(MyComp);
     }
 };
+ 
+/*
+[347 M]. Top k Frequent Elements
 
-// #347. Top k Frequent Elements
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+
+Key：在便利map时，只维护长度是k的heap；所以当heap的长度是k时，对于后面的map元素，heap总是应该将小的删除，加入相对大的，所以使用最小堆
+*/
 class TopFrequnt {
 public:
     vector<int> LaunchSolver(vector<int> &nums, int k) {
@@ -58,7 +74,7 @@ public:
         for (int i = 0; i < nums.size(); ++i) {
             freq[nums[i]]++;
         }
-        // 维护一个含有k个元素的最小堆PQ,如果遍历到的元素比队列中的最小频率元素频数高，则取出队列中的最小频数元素，将新的元素入队
+        // 维护一个含有k个元素的最小堆PQ, 如果遍历到的元素比pq中的最小频率元素频数高，则取出队列中的最小频数元素，将新的元素入队
         // 最终，在队列中剩下的就是出现频率最高的K个元素
         priority_queue<pair</*频率*/ int, /*元素*/ int>, vector<pair<int, int>>,
                 greater<pair<int, int>>>
@@ -66,7 +82,7 @@ public:
         for (auto itr = freq.begin(); itr != freq.end(); itr++) {
             if (pq.size() == k) {
                 if (pq.top().first < itr->second) {
-                    pq.pop();
+                    pq.pop();  // 总是应该将小的删除，加入相对大的，所以使用最小堆
                     pq.push(make_pair(itr->second, itr->first));
                 }
             } else {
