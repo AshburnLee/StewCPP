@@ -150,10 +150,15 @@ int& Array::operator[](int i) {
 - 如果返回的是指针/引用，caller 仍然能“透过它”改原对象；这时 const 就很关键。
 
 
-## 混淆
+## 混淆 ***
 
 - `char* const p` “*” 左边无const（可改内容），“*” 右边有const（不可改指向）
+- `const char* p` 和 `char const* p` “*”左边有const，完全等价（所指内容不可改）
 - `const char* const p` “*” 左右都有const（内容和指向都不可改）
-- `const char*` 和 `char const*` “*”左边有const，完全等价（所指内容不可改）
 - `const char const*` “*” 左边两个const，重复笔误 
 
+以下语法不对，但是便于记忆：
+
+`(char)* const p;` : p 前是const，即p不能改指向，*前是char，即p指向元素可以改。
+`(const char)* p;` : p 前无const，即p可改指向，*前是const char，即p指向元素不能改。
+`(const char)* const p` : p 是const，且指向的元素也是const。 
