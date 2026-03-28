@@ -34,14 +34,22 @@ class TensorNameLike {
 public:
     explicit TensorNameLike(std::string s) : name_(std::move(s)) {}
 
+    // 成员比较：左操作数为 *this，可比较 “同类” 或 “string 在右侧” 
+    // 注意 成员操作符 与友元操作符的 
+    bool operator==(const TensorNameLike& o) const { return name_ == o.name_; }
+    bool operator!=(const TensorNameLike& o) const { return name_ != o.name_; }
+    bool operator==(const std::string& s) const { return name_ == s; }
+    bool operator!=(const std::string& s) const { return name_ != s; }
+
 private:
     std::string name_;
 
-    // 友元比较函数直接读取私有 name_
-    friend bool operator==(const std::string & s, const TensorNameLike & tn) {
+    // 非成员友元：仅当 std::string 在左侧时需要（成员函数无法实现 s == tn， 故必须是 friend） ***
+    // 这里不是const 函数，因为 函数改变了私有成员
+    friend bool operator==(const std::string& s, const TensorNameLike& tn) {
         return s == tn.name_;
     }
-    friend bool operator!=(const std::string & s, const TensorNameLike & tn) {
+    friend bool operator!=(const std::string& s, const TensorNameLike& tn) {
         return s != tn.name_;
     }
 };
@@ -57,7 +65,12 @@ int main() {
     Worker::consume_one(pool);
 
     TensorNameLike tn("blk.0.attn_q.weight");
-    std::cout << "match? " << ("blk.0.attn_q.weight" == tn) << "\n";
-    std::cout << "not match? " << ("token_embd.weight" != tn) << "\n";
+    TensorNameLike same("blk.0.attn_q.weight");
+    TensorNameLike other("other");
+    std::cout << "string left == tn? " << ("blk.0.attn_q.weight" == tn) << "\n";   // 友元
+    std::cout << "tn == string right? " << (tn == std::string("blk.0.attn_q.weight")) << "\n";  // 成员
+
+    std::cout << "tn == same object? " << (tn == same) << " tn != other? " << (tn != other) << "\n";  // 成员
+    std::cout << "string left != tn? " << ("token_embd.weight" != tn) << "\n";   // 友元
     return 0;
 }

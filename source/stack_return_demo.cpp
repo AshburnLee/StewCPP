@@ -7,25 +7,25 @@
 #include <memory>
 #include <string>
 
-// ---------- 错误写法（返回后 strs 已失效，指针悬空）----------
+//  错误写法（返回后 strs 已失效，指针悬空），这样写工程上无意义
 char* bad_init() {
     char strs[] = "Hi, there";  // 局部自动存储期数组，位于当前函数栈帧
     char* ptr = strs;           // ptr 指向上述栈上内存的首地址
     return ptr;         // 错误：返回后 strs 生命周期结束，ptr 成为悬空指针，指向的内容已被释放
 }
 
-// ---------- 修正 1：按值返回 std::string（推荐）----------
+//  修正 1：按值返回 std::string（推荐）
 std::string good_init_string() {
     return std::string("Hi, there");
 }
 
-// ---------- 修正 2：返回字符串字面量指针（生命周期贯穿程序）----------
+//  修正 2：返回字符串字面量指针（生命周期贯穿程序）
 // 注意：返回的是字面量，不是局部数组副本。
 const char* good_init_literal() {
     return "Hi, there";
 }
 
-// ---------- 修正 3：动态分配 + 调用方负责释放（或改用 unique_ptr）----------
+//  修正 3：动态分配 + 调用方负责释放（或改用 unique_ptr）
 // 注意：不能在函数内 delete[] p——否则返回悬空指针；须由接收返回值的调用方 delete[]（与 new[] 配对）。
 char* good_init_heap() {
     char* p = new char[16];   // 在堆上分配；所有权随返回值转移给调用方
@@ -33,7 +33,7 @@ char* good_init_heap() {
     return p;             // 不在此处释放；见 main 中 delete[] heap
 }
 
-// ---------- 修正 4：unique_ptr<char[]>，所有权随对象移动，作用域结束自动 delete[] ----------
+//  修正 4：unique_ptr<char[]>，所有权随对象移动，作用域结束自动 delete[] 
 std::unique_ptr<char[]> good_init_heap_unique() {
     auto p = std::make_unique<char[]>(16);
     std::strcpy(p.get(), "Hi, there");

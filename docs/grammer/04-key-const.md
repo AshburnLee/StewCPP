@@ -73,20 +73,31 @@ int main() {
 返回值是拷贝：`const int my_func() {}` 表示函数返回值不能在后续被修改，即可以读但不能被写。
 
 
-## 6. 修饰成员函数-不能修改类的成员变量
+## 6. 修饰成员函数：对“普通非静态成员”表现为只读
 
-一般用于修饰**类的成员函数**， const 类对象中调用 const 方法。
+一般用于修饰**成员函数**末尾的 `const`：此时隐式 `this` 为 `const T*`，**不能通过 `this` 去修改普通的非静态数据成员**（写 `this->x = ...` 会报错）。
+
+所以 **`const` 对象只能调用 `const` 成员函数**（构造/析构等除外）就很合理了。
 
 ~~~cpp
 class MyClass {
 public:
-    void fun() const { // fun是常成员函数
-        // this->x = 20; // 错误，不能修改成员变量
+    void fun() const { // 常成员函数
+        // this->x = 20;     // 错误：不能修改普通非静态成员
+        // this->y = 1;      // 错误
+        hits++;              // 合法：mutable 成员可在 const 成员函数中修改
+        MyClass::s_count++;  // 合法：静态数据成员不随“当前对象的 const”一起被限制
     }
 private:
     int x;
+    int y;
+    mutable int hits = 0;           // 例外 1：mutable（缓存、互斥量等内部可写状态）
+    static int s_count;             // 例外 2：static（属于类，不是"当前 const 实例"的逐对象状态）
 };
+// int MyClass::s_count = 0;  // 在 .cpp 里定义一次（若在单文件示例中编译需写上）
 ~~~
+
+**小结**：说“const 成员函数不能改成员”在教学中常指**非 static、非 mutable 的数据成员**；`mutable` 与 `static` 是常见例外。勿用 `const_cast` 强行去掉 const 去改本应 const 的对象，否则可能未定义行为。
 
 
 ## 7. 修饰类成员属性

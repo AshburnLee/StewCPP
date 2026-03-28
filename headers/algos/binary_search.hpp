@@ -10,7 +10,7 @@ using namespace std;
 // 二分查找的本质不是“有序”，而是“每一次比较都能排除一半解空间”，
 // 只要问题具有决策单调性（或称“二段性”），即可二分——哪怕数组无序！
 // Insight: BS 细分为两个类型：【找左边界】 & 【找右边界】
-//      「找第一个满足条件的」→ 用 left < right + 下取整 + right = mid / left = mid+1
+//      “找第一个满足条件的”→ 用 left < right + 下取整 + right = mid / left = mid+1
 
 // 左边界 / 右边界 : while (left < right)
 // 精确查找        : while (left <= right)
@@ -91,7 +91,7 @@ public:
 版本号连续递增，从某一个版本号开始，出现问题，找打这个版本号，提供API判断版本的好坏： bool isBadVersion(int version);
 
 Insight: 
-    存在一个临界点 k，使得 [1, k-1] 全好，[k, n] 全坏 → 典型「二段性」！
+    存在一个临界点 k，使得 [1, k-1] 全好，[k, n] 全坏 → 典型“二段性”！
     第一个满足 isBadVersion(x) == true 的 x，即 左边界（lower_bound）。
 
     若 mid 是坏版本 ⇒ 第一个坏版本 ≤ mid ⇒ right = mid  
