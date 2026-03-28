@@ -31,7 +31,25 @@ message("c compiler: ${STEWC_COMPILER}")
 # set(CMAKE_CXX_COMPILER "g++")
 set(CMAKE_CXX_FLAGS "-Wall")  # 开启所有警告
 
-set(CMAKE_BUILD_TYPE Debug)
+# 先确定构建类型，再决定是否加 ASan（仅 Debug 启用）
+# NOT CMAKE_BUILD_TYPE：CMAKE_BUILD_TYPE 未设置或为空时为真（新 build 目录、且未传 -DCMAKE_BUILD_TYPE 时常见）
+if(NOT CMAKE_BUILD_TYPE)
+    # 将默认构建类型写入 cache，并设为 Debug
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)  
+endif()
+
+# AddressSanitizer：构建类型为 Debug（与 -DCMAKE_BUILD_TYPE=Debug 一致）且 GCC/Clang 时开启
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # 编译期：ASan + 保留栈帧 + 调试信息
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer -g")
+    # 链接期：必须同样带上 sanitizer，否则链接/运行易出错
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+    message(STATUS "AddressSanitizer: ON (Debug)")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "AddressSanitizer: OFF (compiler not GNU/Clang)")
+else()
+    message(STATUS "AddressSanitizer: OFF (not Debug)")
+endif()
 
 
 # if(CMAKE_CUDA_COMPILER)
