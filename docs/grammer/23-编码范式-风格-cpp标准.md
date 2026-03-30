@@ -371,4 +371,3 @@ std::copy_if(vector1.begin(), vector1.end(), std::back_inserter(res),
                 return std::find(vector2.begin(), vector2.end(), w.id) != vector2.end();
             });
 ~~~
-
