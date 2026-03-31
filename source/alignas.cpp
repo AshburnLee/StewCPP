@@ -69,12 +69,69 @@ int Test2() {
       std::cout << "Difference from previous: " << address - prevAddress << " bytes" << std::endl;
     }
   }
-
   return 0;
+}
+
+#include <cstdint>
+#include <type_traits>
+
+template <std::size_t N, typename T>
+bool is_aligned(const T* p) {
+  static_assert((N & (N - 1)) == 0, "N must be power of two");
+  auto addr = reinterpret_cast<std::uintptr_t>(p);
+  return (addr & (N - 1)) == 0;
+}
+
+template <std::size_t N>
+size_t do_align(size_t size) {
+    // 将 size 增加到下一个对齐边界的临界值 & 掩码
+    return (size + (N - 1)) & ~(N - 1);
+}
+
+namespace {
+  struct S { double x; };
+}
+
+void Test3(){
+  S s;
+  bool ok = is_aligned<alignof(S), S>(&s);
+  std::cout << "Is aligned: " << ok << std::endl; // 1=true
+  return;
+}
+
+// 先构造一个“可能未对齐”的指针，再用 do_align 强制对齐并验证
+void Test4() {
+    // 1) 在一块原始缓冲上手工制造一个“不对齐”的 S 指针
+    //    这里我们按 1 字节对齐拿到原始内存，然后故意偏移 1 字节
+    constexpr std::size_t N = alignof(S);
+    std::cout << "alignof(S) = " << N << "\n";
+
+    // 分配比对齐需求更大的原始字节缓冲
+    std::size_t buf_size = sizeof(S) + N; // 足够容纳一个对齐后的 S
+    char* raw = new char[buf_size];
+
+    // 故意制造一个“肯定不按 N 对齐”的地址：原始地址 + 1
+    S* misaligned = reinterpret_cast<S*>(raw + 1);
+    bool ok0 = is_aligned<N, S>(misaligned);
+    std::cout << "misaligned ptr aligned? " << ok0 << " (expect 0)\n";
+
+    // 2) 使用 do_align 计算在 raw 内部的下一个 N 字节对齐地址
+    std::uintptr_t base = reinterpret_cast<std::uintptr_t>(raw);
+    std::uintptr_t aligned_addr = do_align<N>(base);
+    S* aligned = reinterpret_cast<S*>(aligned_addr);
+    bool ok1 = is_aligned<N, S>(aligned);
+    std::cout << "aligned ptr aligned?   " << ok1 << " (expect 1)\n";
+
+    // 简单使用一下，防止被优化掉
+    aligned->x = 3.14;
+    std::cout << "aligned->x = " << aligned->x << "\n";
+
+    delete[] raw;
 }
 
 int main() {
   Test1();
   Test2();
+  Test3();
   return 0;
 }

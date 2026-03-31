@@ -1,25 +1,27 @@
 ## 通过宏创建   [error-handling]
 
 ~~~cpp
-#define MY_GRAPH_SAFE(f, s) \
-    do { \
-        try { \
-            f; \
-        } catch (const my::error &e) { \
-            if (s == CRIT || s == WARN) { \
+#define MY_GRAPH_SAFE(f, s)                                \
+    do {                                                   \
+        try {                                              \
+            f;                                             \
+        } catch (const my::error &e) {                     \ 
+            if (s == CRIT || s == WARN) {                  \
                 MY_PRINT(0, "error [%s:%d]: '%s' -> %s\n", \
-                        __PRETTY_FUNCTION__, __LINE__, #f, e.what()); \
-                fflush(0); \
-                if (s == CRIT) exit(2); \
-            } \
-            return FAIL; \
-        } \
+                        __PRETTY_FUNCTION__, __LINE__, #f, e.what());                               \
+                fflush(0);                                 \
+                if (s == CRIT) exit(2);                    \
+            }                                              \
+            return FAIL;                                   \
+        }                                                  \
     } while (0)
 ~~~
 
 `MY_GRAPH_SAFE(c_partitions.emplace_back(partitions[i].compile(inputs, outputs, eng)), WARN);`
+
 其中：
-`do { ... } while (0)`: This is a common idiom used in macros to create a block of code that behaves like a single statement.
+
+`do { ... } while (0)`:这是宏里常用的一种惯用写法，用来把一段代码包成一个看起来像“单条语句”的代码块。
 
 KAQ: 上述中的 e 没有通过参数传入，那么 e 是如被捕获的呢？
 
@@ -28,12 +30,16 @@ KAQ: 上述中的 e 没有通过参数传入，那么 e 是如被捕获的呢？
 所以 e 对象的创建其实是通过继承 `std::exception` 实现的：
 
 ~~~cpp
+enum class my_status_t {
+    Ok = 0,
+    NotFound,
+    IOError,
+};
+
 struct error : public std::exception {
     my_status_t status;
     const char *message;
 
-    /// Constructs an instance of an exception class.
-    ///
     /// @param status The error status returned by a C API function.
     /// @param message The error message.
     error(my_status_t status, const char *message)
@@ -42,12 +48,10 @@ struct error : public std::exception {
     /// Returns the explanatory string.
     const char *what() const noexcept override { return message; }
 
-    /// A convenience function for wrapping calls to C API functions. Checks
-    /// the return status and throws an my::error in case of failure.
-    ///
     /// @param status The error status returned by a C API function.
     /// @param message The error message.
-    static void wrap_c_api(my_status_t status, const char *message) {
+    // 语义上它不依赖对象状态：check 只看传进来的 Status 和 msg ,与具体对象的成员无关
+    static void check(my_status_t status, const char *message) {
         if (status != my_success) MY_THROW_ERROR(status, message);
     }
 };
@@ -55,7 +59,7 @@ struct error : public std::exception {
 
 KAQ: `error &e` 的实现是需要继承自 `std::exception` 吗？
 
-答：异常类并不一定非要继承自 `std::exception`。然而，**继承自 std::exception 是一种良好的实践**，因为它是 C++ 标准库中异常体系结构的基类，提供了一些通用的异常处理功能。
+答：异常类并不一定非要继承自 `std::exception`。然而，**继承自 std::exception 是一种良好的实践**，因为它是 **C++ 标准库**中异常体系结构的基类，提供了一些通用的异常处理功能。
 
 如果你的 `me::error` 类继承自 `std::exception`，它可以从 `std::exception` 继承的成员函数，例如 `what()`，以提供关于异常的描述信息。这对于在捕获异常时获取有用的错误消息是很方便的。
 
