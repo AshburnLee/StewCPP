@@ -9,7 +9,7 @@
 #if defined _WIN32 || defined CYGWIN
 #define COMPILER_DLL_EXPORT __declspec(dllexport)
 #else
-#define COMPILER_DLL_EXPORT attribute((visibility("default")))
+#define COMPILER_DLL_EXPORT __attribute__((visibility("default")))
 #endif
 ~~~
 
